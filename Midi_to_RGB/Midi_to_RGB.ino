@@ -1,19 +1,25 @@
 #include <FastLED.h>
 #define NUM_LEDS 36
+// 灯珠个数定义
 #define DATA_PIN 2
+// 控制脚定义
+#define KICK_NOTE 36
+#define HIHAT_NOTE 37
+#define SNARE_NOTE 38
+// 响应的MIDI消息定义
 
 int noteON = 144;
 int noteOFF = 128;
-// Define the array of leds
+// MIDI命令中的ON/OFF
+
 CRGB leds[NUM_LEDS];
-CRGB KICK = CRGB(122,22,80);
-CRGB SNARE = CRGB(22,55,166);
-CRGB HIHAT = CRGB(12,122,80);
+CRGB KICK = CRGB(55,122,55);
+CRGB SNARE = CRGB(0,55,122);
+CRGB HIHAT = CRGB(122,22,55);
 CRGB STANDBY;
 void setup() { 
       Serial.begin(38400);
       FastLED.addLeds<WS2812B, DATA_PIN>(leds, NUM_LEDS);
-
 }
 
 // 切换颜色
@@ -39,7 +45,6 @@ void color_switchT(CRGB color){
   FastLED.show();
 }
 void loop() { 
-#ifdef mode1
     int incomingByte;
     // 接收MIDI
     if (Serial.available() > 0) {
@@ -51,15 +56,15 @@ void loop() {
         
         // 判断音高
         switch(incomingByte){
-          case 36:
+          case KICK_NOTE:
             part = 0;
             STANDBY = KICK;
             break;
-          case 37:
+          case HIHAT_NOTE:
             part = 1;
             STANDBY = HIHAT;
             break;
-          case 38:
+          case SNARE_NOTE:
             part = 2;
             STANDBY = SNARE;
             break;
@@ -74,7 +79,4 @@ void loop() {
         }
     }
   }
-#else
-        color_switchT(CRGB:: White);
-#endif
 }
